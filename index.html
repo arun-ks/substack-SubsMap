@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f4">
+  <meta name="description" content="Create a world map from the country codes in your Substack subscriber export.">
+  <title>Subscriber Map — Arun K S</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172b24;
+      --muted: #64736b;
+      --line: #dce5df;
+      --paper: #fff;
+      --wash: #f5f7f4;
+      --green: #176b50;
+      --green-dark: #10523d;
+      --mint: #e8f3ed;
+      --amber: #79551a;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--wash); color: var(--ink); }
+    .page { width: min(100% - 36px, 860px); margin: 0 auto; padding: 52px 0 34px; }
+    header { margin: 0 0 28px; }
+    .eyebrow { color: var(--green); font-size: .76rem; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { margin: 10px 0 9px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.25rem, 6vw, 3.55rem); font-weight: 500; letter-spacing: -.045em; line-height: 1.02; }
+    header p { max-width: 620px; margin: 0; color: var(--muted); font-size: 1.06rem; line-height: 1.65; }
+    .card { padding: clamp(22px, 5vw, 38px); border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: 0 12px 32px #23382d0a; }
+    .field + .field { margin-top: 25px; }
+    label { display: block; margin-bottom: 8px; font-size: .96rem; font-weight: 700; }
+    .hint { margin: -2px 0 10px; color: var(--muted); font-size: .88rem; line-height: 1.5; }
+    input, textarea { width: 100%; border: 1px solid #cbd8d0; border-radius: 10px; background: #fff; color: var(--ink); font: inherit; outline: none; transition: border-color .15s, box-shadow .15s; }
+    input { min-height: 48px; padding: 0 13px; }
+    textarea { min-height: 190px; padding: 13px; resize: vertical; line-height: 1.55; tab-size: 2; }
+    input:focus, textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px #176b501c; }
+    input::placeholder, textarea::placeholder { color: #98a59e; }
+    .actions { display: flex; align-items: center; gap: 14px; margin-top: 22px; }
+    button { min-height: 48px; padding: 0 20px; border: 0; border-radius: 10px; background: var(--green); color: #fff; cursor: pointer; font: inherit; font-weight: 700; transition: background .15s, transform .15s; }
+    button:hover { background: var(--green-dark); }
+    button:active { transform: translateY(1px); }
+    button:focus-visible, a:focus-visible { outline: 3px solid #80b9a1; outline-offset: 3px; }
+    .privacy { color: var(--muted); font-size: .82rem; line-height: 1.4; }
+    .message { margin: 19px 0 0; padding: 13px 15px; border-radius: 10px; background: var(--mint); color: var(--green-dark); font-size: .92rem; line-height: 1.5; }
+    .message.error { background: #fff0eb; color: #8b3420; }
+    .result { margin-top: 24px; padding: 20px; border: 1px solid #cde0d5; border-radius: 13px; background: #f7fbf8; }
+    .result h2 { margin: 0 0 6px; font-size: 1.05rem; }
+    .result p { margin: 0 0 12px; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+    .result a { color: var(--green-dark); font-weight: 700; overflow-wrap: anywhere; }
+    .instructions { margin-bottom: 18px; border: 1px solid var(--line); border-radius: 14px; background: #fbfcfa; overflow: hidden; }
+    .instructions summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 58px; padding: 14px 20px; color: var(--ink); cursor: pointer; font-weight: 700; list-style: none; }
+    .instructions summary::-webkit-details-marker { display: none; }
+    .instructions summary::after { content: "+"; color: var(--green); font-size: 1.4rem; font-weight: 500; }
+    .instructions[open] summary::after { content: "−"; }
+    .instructions-content { padding: 0 21px 18px; }
+    .instructions-content h2 { margin: 0 0 10px; font-family: Georgia, "Times New Roman", serif; font-size: 1.3rem; font-weight: 500; }
+    .instructions ol { margin: 0; padding-left: 21px; color: #3d5047; font-size: .91rem; line-height: 1.7; }
+    .instructions a, footer a { color: var(--green-dark); }
+    code { padding: 2px 5px; border-radius: 4px; background: #edf2ee; font-size: .88em; }
+    footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 9px 20px; margin-top: 25px; color: var(--muted); font-size: .86rem; }
+    footer p { margin: 0; }
+    [hidden] { display: none !important; }
+    @media (max-width: 520px) {
+      .page { width: min(100% - 24px, 860px); padding-top: 32px; }
+      .actions { align-items: flex-start; flex-direction: column; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="eyebrow">A map of readers around the world</div>
+      <h1>Where are your readers?</h1>
+      <p>Turn the country column from your Substack subscriber export into a shareable world map.</p>
+    </header>
+
+    <details class="instructions">
+      <summary>How to export country codes from Substack</summary>
+      <div class="instructions-content">
+        <h2>Get country codes from Substack</h2>
+        <ol>
+          <li>Go to <code>https://&lt;Substack Handle&gt;.substack.com/publish/subscribers</code>, replacing <code>&lt;Substack Handle&gt;</code> with the publication’s handle.</li>
+          <li>Click <strong>… → Export → Export all columns</strong> to download the subscriber CSV.</li>
+          <li>Open the CSV in Excel and find the column titled <strong>Country</strong>.</li>
+          <li>Select and copy the values in that column, including or excluding its title row, then paste them into the box below.</li>
+          <li>Choose your home country and click <strong>Generate Map</strong>.</li>
+        </ol>
+      </div>
+    </details>
+
+    <section class="card" aria-label="Generate a subscriber map">
+      <form id="map-form">
+        <div class="field">
+          <label for="home-country">Your home country</label>
+          <p class="hint">Search by country name or ISO country code.</p>
+          <input id="home-country" name="home-country" list="country-options" placeholder="Start typing a country…" autocomplete="off" required>
+          <datalist id="country-options"></datalist>
+        </div>
+        <div class="field">
+          <label for="country-codes">Subscriber country codes</label>
+          <p class="hint">Paste the cells from Excel’s <strong>Country</strong> column. A header row is fine; duplicates and unrecognized rows are skipped.</p>
+          <textarea id="country-codes" name="country-codes" placeholder="Country&#10;US&#10;IN&#10;GB" spellcheck="false" required></textarea>
+        </div>
+        <div class="actions">
+          <button type="submit">Generate Map</button>
+          <span class="privacy">Your pasted data stays in this page and is not saved.</span>
+        </div>
+      </form>
+      <div id="feedback" class="message" role="status" aria-live="polite" hidden></div>
+      <section id="result" class="result" aria-live="polite" hidden>
+        <h2>Your map is ready</h2>
+        <p id="result-summary"></p>
+        <a id="map-link" target="_blank" rel="noopener noreferrer">Open your subscriber map ↗</a>
+      </section>
+    </section>
+
+    <footer>
+      <p>Made by <a href="https://arunk5.substack.com/" target="_blank" rel="noopener noreferrer">Arun K S on Substack</a></p>
+      <p><a href="https://arun-ks.github.io/" target="_blank" rel="noopener noreferrer">arun-ks.github.io</a></p>
+    </footer>
+  </main>
+  <script>
+    // ISO 3166-1 alpha-2 codes, including territories represented by ISO.
+    const ISO_CODES = `AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW`.split(/\s+/);
+    const codeToName = new Map();
+    const nameToCode = new Map();
+    const displayNames = new Intl.DisplayNames([navigator.language || "en"], { type: "region" });
+    for (const code of ISO_CODES) {
+      const name = displayNames.of(code) || code;
+      codeToName.set(code, name);
+      nameToCode.set(name.toLocaleLowerCase(), code);
+    }
+
+    const options = document.getElementById("country-options");
+    [...ISO_CODES].sort((a, b) => codeToName.get(a).localeCompare(codeToName.get(b))).forEach((code) => {
+      const option = document.createElement("option");
+      option.value = `${codeToName.get(code)} (${code})`;
+      options.append(option);
+    });
+
+    const form = document.getElementById("map-form");
+    const homeInput = document.getElementById("home-country");
+    const pastedInput = document.getElementById("country-codes");
+    const feedback = document.getElementById("feedback");
+    const result = document.getElementById("result");
+    const resultSummary = document.getElementById("result-summary");
+    const mapLink = document.getElementById("map-link");
+
+    function resolveCountry(value) {
+      const normalized = value.trim();
+      const codeMatch = normalized.match(/\(([A-Za-z]{2})\)$/);
+      const candidate = (codeMatch ? codeMatch[1] : normalized).toUpperCase();
+      if (ISO_CODES.includes(candidate)) return candidate;
+      return nameToCode.get(normalized.toLocaleLowerCase()) || null;
+    }
+
+    function showFeedback(message, isError = false) {
+      feedback.textContent = message;
+      feedback.classList.toggle("error", isError);
+      feedback.hidden = false;
+    }
+
+    homeInput.addEventListener("input", () => {
+      feedback.hidden = true;
+      result.hidden = true;
+    });
+    pastedInput.addEventListener("input", () => {
+      feedback.hidden = true;
+      result.hidden = true;
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      result.hidden = true;
+      const homeCode = resolveCountry(homeInput.value);
+      if (!homeCode) {
+        showFeedback("Choose a country from the suggestions, or enter a valid two-letter ISO country code.", true);
+        homeInput.focus();
+        return;
+      }
+
+      const validCodes = new Set();
+      let skippedRows = 0;
+      const rows = pastedInput.value.split(/[\r\n\t,]+/).map((cell) => cell.trim()).filter(Boolean);
+      for (const cell of rows) {
+        const code = cell.toUpperCase();
+        if (ISO_CODES.includes(code)) validCodes.add(code);
+        else skippedRows += 1;
+      }
+      validCodes.add(homeCode);
+      const places = [...validCodes].sort().join("_");
+      const url = `https://visitedplaces.com/view/?map=world&projection=geoEqualEarth&theme=dark-green&water=1&graticule=0&names=1&duration=0&placeduration=0&slider=0&autoplay=1&autozoom=none&autostep=0&pie=1&home=${homeCode}&places=~${places}`;
+
+      mapLink.href = url;
+      resultSummary.textContent = `${validCodes.size} unique countries, including your home country (${homeCode}).`;
+      result.hidden = false;
+      if (skippedRows) showFeedback(`Skipped ${skippedRows} unrecognized ${skippedRows === 1 ? "row" : "rows"}.`);
+      else showFeedback("All rows were recognized. Your home country is included in the map.");
+      result.scrollIntoView({ behavior: "instant", block: "center" });
+    });
+  </script>
+</body>
+</html>
