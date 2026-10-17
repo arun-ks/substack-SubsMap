@@ -71,13 +71,13 @@
 <body>
   <main class="page">
     <header>
-      <div class="eyebrow">A map of readers around the world</div>
+      <div class="eyebrow">Generate a map of Substack subscribers</div>
       <h1>Where are your readers?</h1>
-      <p>Turn the country column from your Substack subscriber export into a shareable world map.</p>
+      <p>Use details from your Substack subscriber export to generate a shareable world map.</p>
     </header>
 
     <details class="instructions">
-      <summary>How to export country codes from Substack</summary>
+      <summary>Click here to see the instructions for using this tool</summary>
       <div class="instructions-content">
         <h2>Get country codes from Substack</h2>
         <ol>
@@ -89,8 +89,11 @@
           <li>In the popup, select <strong>Export all columns</strong> and click <strong>Export</strong>.</li>
           <li>After a few seconds, the button text will change to <strong>Download last export</strong>. Click it.</li>
           <li>Open the CSV in Excel and find the column titled <strong>Country</strong> (normally column M).</li>
-          <li>Select and copy the values in that column, including or excluding its title row, then paste them into the box below.</li>
-          <li>Choose <strong>Your home country</strong> and click <strong>Generate Map</strong>.</li>
+        </ol>
+        <h2>Generate the map</h2>
+        <ol>
+          <li>Select and copy the values in the <strong>Country</strong> column from Excel (with or without the title), then paste them into the <strong>Subscriber country codes</strong> box below.</li>
+          <li>Update <strong>Your home country</strong> and click <strong>Generate Map</strong>.</li>
         </ol>
       </div>
     </details>
@@ -100,13 +103,13 @@
         <div class="field">
           <label for="home-country">Your home country</label>
           <p class="hint">Search by country name or ISO country code.</p>
-          <input id="home-country" name="home-country" list="country-options" value="Malaysia (MY)" placeholder="Start typing a country…" autocomplete="off" required>
+          <input id="home-country" name="home-country" list="country-options" placeholder="Start typing a country…" autocomplete="off" required>
           <datalist id="country-options"></datalist>
         </div>
         <div class="field">
           <label for="country-codes">Subscriber country codes</label>
           <p class="hint">Paste the cells from Excel’s <strong>Country</strong> column. A header row is fine; duplicates and unrecognized rows are skipped.</p>
-          <textarea id="country-codes" name="country-codes" placeholder="Country&#10;US&#10;IN&#10;GB" spellcheck="false" required></textarea>
+          <textarea id="country-codes" name="country-codes" placeholder="Country&#10;SG&#10;ID&#10;IN" spellcheck="false" required></textarea>
         </div>
         <div class="actions">
           <button type="submit">Generate Map</button>
