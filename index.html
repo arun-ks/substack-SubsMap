@@ -103,7 +103,7 @@
         <div class="field">
           <label for="home-country">Your home country</label>
           <p class="hint">Search by country name or ISO country code.</p>
-          <input id="home-country" name="home-country" list="country-options" placeholder="Start typing a country…" autocomplete="off" required>
+          <input id="home-country" name="home-country" list="country-options" value="Malaysia (MY)" placeholder="Start typing a country…" autocomplete="off" required>
           <datalist id="country-options"></datalist>
         </div>
         <div class="field">
@@ -155,6 +155,9 @@
     const result = document.getElementById("result");
     const resultSummary = document.getElementById("result-summary");
     const mapLink = document.getElementById("map-link");
+
+    // Keep Malaysia selected when the page first loads, even if markup is later changed.
+    if (!homeInput.value) homeInput.value = "Malaysia (MY)";
 
     function resolveCountry(value) {
       const normalized = value.trim();
@@ -211,5 +214,3 @@
   </script>
 </body>
 </html>
-
-
